@@ -3,6 +3,6 @@ import { CreateUseController } from './controllers/CreateUserController';
 
 const route = Router();
 const createUseController = new CreateUseController();
-route.post('/',createUseController.handle);
+route.post('/', createUseController.handle);
 
 export { route };

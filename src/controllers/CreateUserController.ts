@@ -1,22 +1,25 @@
+import { userRepository } from './../repositories/userRepository';
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { CreateUserService } from '../service/CreateUserService';
 
-class CreateUseController {
-    handle(request: Request, response: Response) {
-        const createUserService = new CreateUserService();
+export class CreateUseController {
+    async handle(req: Request, res: Response) {
+        const { name, email } = req.body;
 
-        const name = request.body.name;
-        const email = request.body.email;
-
-        if (name.length === 0 ||  email.length === 0) {
-            return response.status(StatusCodes.BAD_REQUEST).json(`erro ao cadastrar`)
+        if (!name || !email) {
+            return res.status(400).json({ message: 'nome é obrigatorio' });
         }
 
-        const user = createUserService.execute({ name, email });
+        try {
+            const newUser = userRepository.create({
+                name,
+                email,
+            });
+            await userRepository.save(newUser);
 
-        return response.status(StatusCodes.CREATED).json(user);
+            res.status(201).json(newUser);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
     }
 }
-
-export { CreateUseController };
